@@ -20,4 +20,4 @@ node_modules/
 main.dSYM/
 *.pdf
 *.vcf
-prop\ list
+!uploads/testCardMin.vcf
