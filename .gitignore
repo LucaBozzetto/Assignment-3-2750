@@ -13,8 +13,10 @@ Thumbs.db
 
 !makefile
 !README
-bin/*
-!bin/.gitkeep 
+README.md
+node_modules/
+*.dylib
+*.so
 main.dSYM/
 *.pdf
 *.vcf

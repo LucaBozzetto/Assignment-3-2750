@@ -1,0 +1,129 @@
+html {
+    width: 60%;
+    height: 100%;
+    min-height: 100%;
+    margin: 0 auto;
+    font-size: 16px;
+    background-color: #FFFFFF;
+}
+body {
+    height: 100%;
+    min-height: 100%;
+    line-height: 1.75;
+    background-color: #FFFFFF;
+}
+a:link:hover {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    text-decoration: underline;
+    cursor: pointer;
+    cursor: hand;
+}
+input[type=submit], button {
+    cursor: pointer;
+    cursor: hand;
+}
+@media(max-width: 900px) {
+    html {
+        font-size: 14px !important;
+        width: 80% !important;
+    }
+}
+@media(max-width: 480px) {
+    html {
+        font-size: 12px !important;
+        width: 90% !important;
+    }
+}
+@media(max-width: 320px) {
+    html {
+        font-size: 12px !important;
+        width: 100% !important;
+    }
+}
+
+/* .table-wrapper-scroll-y {
+  display: block;
+  max-height: 200px;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+} */
+
+.tableFixHead {
+  overflow-y: auto;
+  overflow-x: scroll;
+  max-height: 200px;
+}
+
+.tableFixHead table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.tableFixHead th,
+.tableFixHead td {
+  padding: 8px 16px;
+}
+
+.tableFixHead th {
+  position: sticky;
+  top: 0;
+  /* background: #eee; */
+}
+
+#cardViewPanel table {
+    counter-reset: rowNumber;
+}
+
+#cardViewPanel table tbody tr{
+    counter-increment: rowNumber;
+}
+
+#cardViewPanel table tr td:first-child::before {
+    content: counter(rowNumber);
+    min-width: 1em;
+    margin-right: 0.5em;
+}
+
+.hideCounter::before {
+    content: none!important;
+}
+
+.panelMenu{
+    padding: 1%;
+}
+
+.clearBtn{
+    margin-left: 1em;
+}
+
+#errorBoard {
+  overflow-y: scroll; /*FIXME: hidden at first, change value via js */
+  overflow-x: hidden;
+  max-height: 200px;
+}
+
+.cardViewDropdown{
+    margin-bottom: 1em;
+}
+
+/* Ajax loading spinner */
+.noClick{
+    pointer-events: none;
+}
+
+.uploadDiv{
+    margin-top: 1em;
+}
+
+.dropdown-menu{
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* .dropdown-item.active{
+    background-color: #212529;
+    color: #fff;
+} */
+

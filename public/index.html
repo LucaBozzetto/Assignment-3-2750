@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>vCard Viewer</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Assignment 3 - CIS*2750 course @ University of Guelph.">
+	<meta name="keywords" content="CHANGE ME">
+	<meta name="author" content="Luca Bozzetto">
+	<!-- Load jquery, bootstrap -->
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<!-- Custom CSS -->
+	<link rel="stylesheet" type="text/css" href="/style.css">
+	<link rel="stylesheet" type="text/css" href="/loading.css"/> 
+	<link rel="stylesheet" type="text/css" href="/loadingbutton.css"/>
+	<!-- Custom CSS End -->
+</head>
+<body>
+	<h3>Download test</h3>
+	If the A3 stub is running and testCardMin.vcf exists in the uploads/ directory on the server, then clicking on the link below will download it from the server.<br>
+	<a href="/uploads/testCardMin.vcf">testCardMin.vcf</a>
+	<hr>
+	<div id="blah">I am blah</div>
+	<hr>
+	<form ref='someform'
+		  id='someform'>
+		  <div class="form-group">
+				<label for="entryBox">Last Name</label>
+				<input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
+			</div>
+		<div class="form-group">
+			<input type='submit' class="btn btn-secondary">
+		</div>
+	</form>
+
+
+	<hr>
+
+	<div class="d-flex justify-content-between panelMenu">
+		<div id="clearBtn" class="d-flex">
+			<h3>Status Panel </h3>
+			<!-- TODO: add filter by option!! -->
+			<button type="button" class="btn btn-outline-danger clearBtn">
+			Clear all messages <span id="messagesBadge" class="badge badge-danger">0</span>
+			<span class="sr-only">unread messages</span>
+			</button>
+		</div>
+		<button class="btn btn-sm btn-outline-dark float-right hideBtn" type="button" data-toggle="collapse" data-target="#statusPanel" aria-expanded="false" aria-controls="statusPanel">
+			Hide Panel
+		</button>
+	</div>
+
+	<!-- NOTE: status panel must be place on top of the window and displays the status 
+	of various commands (success or various errors) -->
+	<div id="statusPanel" class="collapse show">
+		
+		<div id="errorBoard">
+			<div class="alert alert-secondary alert-dismissible fade show" role="alert">
+				<div class="text-center"><strong>Such emptiness!</strong> your status messagges will be shown here</div>
+			</div>
+		</div>
+	</div>
+
+	<hr>
+
+	<div class="d-flex justify-content-between panelMenu">
+		<h3>File Log Panel</h3>
+		<button class="btn btn-sm btn-outline-dark float-right hideBtn" type="button" data-toggle="collapse" data-target="#fileLogPanel" aria-expanded="false" aria-controls="fileLogPanel">
+			Hide Panel
+		</button>
+	</div>
+
+	<div id="fileLogPanel" class="collapse show">
+		<!-- NOTE: if the server request is valid the file is uploaded to 'uploads/' by the 'appo.post()' method
+		The UI should be updated and for every file in the uploads/ folder I should invoke the 'createCard()' function
+		and get its summary. If a file already exists you can overwrite or do nothing (or prompt the user if not too 
+		difficult).
+		The upload button is on the bottom of the file log panel. -->
+		<div class="tableFixHead">
+		<table class="table table-striped text-center table-bordered">
+		<thead class="thead-dark">
+			<tr>
+			  <th scope="col">File name</th>
+			  <th scope="col">Individual's Name</th>
+			  <th scope="col">Addition Properties</th>
+			</tr>
+		  </thead>
+		  <tbody id="fileLogPanelTableBody">
+			<tr>
+			  <td></td>
+			  <td>No files</td>
+			  <td></td>
+			</tr>
+		  </tbody>
+		</table>
+	</div>
+		<!-- <form id="formVCard" action="/upload" method="post" enctype="multipart/form-data"> -->
+			<div class="uploadDiv">
+			<input id="inputFile" type="file" accept=".vcard,.vcf" name="uploadFile">
+			<div id="uploadVCard" class="btn btn-dark ld-over-inverse"><div class="ld ld-ring ld-spin"></div>Upload File</div>
+		</div>
+		<!-- </form> -->
+	</div>
+
+
+	<hr>
+
+
+	<div class="d-flex justify-content-between panelMenu">
+			<h3>Card View Panel</h3>
+		<button class="btn btn-sm btn-outline-dark float-right hideBtn" type="button" data-toggle="collapse" data-target="#cardViewPanel" aria-expanded="false" aria-controls="cardViewPanel">
+			Hide Panel
+		</button>
+	</div>
+
+	<div id="cardViewPanel" class="collapse show">
+		<!-- NOTE: Above the panel, there is a drop-down list of file names. It must include all
+		the files currently stored on the server. This list is empty if there are no files on the server.
+		When the user selects a file, run createCard() on the fileanddisplayitsoutputinthispanel.
+		IfcreateCard()returnsanerror,thendisplayanerrorintheStatusPanel (the Card View panel is
+		unchanged). On OK status, fill the panel from the Card's properties.-->
+
+		<div class="dropdown">
+		<button class="btn btn-block btn-secondary dropdown-toggle cardViewDropdown ld-over-inverse" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<div class="ld ld-ring ld-spin"></div>Click here to select and inspect a VCard
+		</button>
+		<div class="dropdown-menu" id="dropdownBtn">
+		</div>
+		</div>
+		<!-- TODO: add div that shows currently selected file -->
+		<div class="tableFixHead">
+			<table class="table table-striped text-center table-bordered">
+			<thead class="thead-dark">
+				<tr>
+					<th scope="col">Property #</th>
+					<th scope="col">Group</th>
+					<th scope="col">Name</th>
+					<th scope="col">Values</th>
+				</tr>
+				</thead>
+				<tbody id="cardViewPanelTableBody">
+					<tr>
+						<td class="hideCounter"></td>
+						<td>No files</td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<footer class="page-footer font-small pt-4">
+		<div class="footer-copyright text-center py-3">Luca Bozzetto - CIS*2750 @ 
+			<a href="https://www.uoguelph.ca/">University of Guelph</a>
+		</div>
+	</footer>
+
+
+	<!-- Leave me at the bottom of body -->
+	<script src="/index.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
