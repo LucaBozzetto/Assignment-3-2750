@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="Assignment 3 - CIS*2750 course @ University of Guelph.">
-	<meta name="keywords" content="CHANGE ME">
+	<meta name="keywords" content="Assignment,VCard,University of Guelph ">
 	<meta name="author" content="Luca Bozzetto">
 	<!-- Load jquery, bootstrap -->
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -14,36 +14,42 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 	<!-- Custom CSS -->
 	<link rel="stylesheet" type="text/css" href="/style.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="/loading.css"/> 
 	<link rel="stylesheet" type="text/css" href="/loadingbutton.css"/>
 	<!-- Custom CSS End -->
 </head>
 <body>
-	<h3>Download test</h3>
-	If the A3 stub is running and testCardMin.vcf exists in the uploads/ directory on the server, then clicking on the link below will download it from the server.<br>
-	<a href="/uploads/testCardMin.vcf">testCardMin.vcf</a>
-	<hr>
-	<div id="blah">I am blah</div>
-	<hr>
-	<form ref='someform'
-		  id='someform'>
-		  <div class="form-group">
-				<label for="entryBox">Last Name</label>
-				<input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
-			</div>
-		<div class="form-group">
-			<input type='submit' class="btn btn-secondary">
+	<!-- Ajax Upload Loader Div, could be used for other ajax calls but since the files are very small at the moment
+	this was mostly unused. -->
+	<div id="container" class="overlap ld-over-inverse">
+		<div class="ld ld-ring ld-spin"></div>
+	
+	
+	<!-- Menu -->
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<a class="navbar-brand" href="#"><i class="fas fa-address-card align-top" id="menuIcon"></i>VCard Viewer</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		<div class="navbar-nav">
+		<a class="nav-item nav-link active" href="#">App <span class="sr-only">(current)</span></a>
+		<!-- <a class="nav-item nav-link" href="/assignment">Assignment</a> -->
+		<a class="nav-item nav-link" href="/about">About</a>
 		</div>
-	</form>
-
+	</div>
+	</nav>
 
 	<hr>
 
+	<!-- Status Panel -->
+	<!-- NOTE: status panel must be placed on top of the window and displays the status 
+	of various commands (success or various errors) -->
 	<div class="d-flex justify-content-between panelMenu">
-		<div id="clearBtn" class="d-flex">
+		<div class="d-flex">
 			<h3>Status Panel </h3>
-			<!-- TODO: add filter by option!! -->
-			<button type="button" class="btn btn-outline-danger clearBtn">
+			<button id="clearBtn" type="button" class="btn btn-outline-danger clearBtn">
 			Clear all messages <span id="messagesBadge" class="badge badge-danger">0</span>
 			<span class="sr-only">unread messages</span>
 			</button>
@@ -53,12 +59,21 @@
 		</button>
 	</div>
 
-	<!-- NOTE: status panel must be place on top of the window and displays the status 
-	of various commands (success or various errors) -->
 	<div id="statusPanel" class="collapse show">
+		<div class="dropdown">
+			<button class=" align-middle btn btn-sm btn-secondary dropdown-toggle btn-outline-dark filterBtn" type="button" id="filterButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Filters
+			</button>
+			<div class="dropdown-menu" aria-labelledby="filterButton">
+				<a class="dropdown-item active filterListElement" id="successFilter" href="#"><i class='far fa-check-circle'></i>Success</a>
+				<a class="dropdown-item active filterListElement" id="errorFilter" href="#"><i class='far fa-check-circle'></i>Error</a>
+				<a class="dropdown-item active filterListElement" id="warningFilter" href="#"><i class='far fa-check-circle'></i>Warning</a>
+				<a class="dropdown-item active filterListElement" id="uploadFilter" href="#"><i class='far fa-check-circle'></i>Upload</a>
+			</div>
+		</div>
 		
 		<div id="errorBoard">
-			<div class="alert alert-secondary alert-dismissible fade show" role="alert">
+			<div id="emptyMessage" class="alert alert-secondary alert-dismissible fade show" role="alert">
 				<div class="text-center"><strong>Such emptiness!</strong> your status messagges will be shown here</div>
 			</div>
 		</div>
@@ -66,6 +81,7 @@
 
 	<hr>
 
+	<!-- File Log Panel -->
 	<div class="d-flex justify-content-between panelMenu">
 		<h3>File Log Panel</h3>
 		<button class="btn btn-sm btn-outline-dark float-right hideBtn" type="button" data-toggle="collapse" data-target="#fileLogPanel" aria-expanded="false" aria-controls="fileLogPanel">
@@ -74,11 +90,6 @@
 	</div>
 
 	<div id="fileLogPanel" class="collapse show">
-		<!-- NOTE: if the server request is valid the file is uploaded to 'uploads/' by the 'appo.post()' method
-		The UI should be updated and for every file in the uploads/ folder I should invoke the 'createCard()' function
-		and get its summary. If a file already exists you can overwrite or do nothing (or prompt the user if not too 
-		difficult).
-		The upload button is on the bottom of the file log panel. -->
 		<div class="tableFixHead">
 		<table class="table table-striped text-center table-bordered">
 		<thead class="thead-dark">
@@ -91,24 +102,22 @@
 		  <tbody id="fileLogPanelTableBody">
 			<tr>
 			  <td></td>
-			  <td>No files</td>
+			  <td id="fileLogPanelEmptyPlaceholder">No valid files</td>
 			  <td></td>
 			</tr>
 		  </tbody>
 		</table>
 	</div>
-		<!-- <form id="formVCard" action="/upload" method="post" enctype="multipart/form-data"> -->
 			<div class="uploadDiv">
-			<input id="inputFile" type="file" accept=".vcard,.vcf" name="uploadFile">
+			<input id="inputFile" class="form-control-file" type="file" accept=".vcard,.vcf" name="uploadFile">
 			<div id="uploadVCard" class="btn btn-dark ld-over-inverse"><div class="ld ld-ring ld-spin"></div>Upload File</div>
 		</div>
-		<!-- </form> -->
 	</div>
 
 
 	<hr>
 
-
+	<!-- Card View Panel  -->
 	<div class="d-flex justify-content-between panelMenu">
 			<h3>Card View Panel</h3>
 		<button class="btn btn-sm btn-outline-dark float-right hideBtn" type="button" data-toggle="collapse" data-target="#cardViewPanel" aria-expanded="false" aria-controls="cardViewPanel">
@@ -117,20 +126,14 @@
 	</div>
 
 	<div id="cardViewPanel" class="collapse show">
-		<!-- NOTE: Above the panel, there is a drop-down list of file names. It must include all
-		the files currently stored on the server. This list is empty if there are no files on the server.
-		When the user selects a file, run createCard() on the fileanddisplayitsoutputinthispanel.
-		IfcreateCard()returnsanerror,thendisplayanerrorintheStatusPanel (the Card View panel is
-		unchanged). On OK status, fill the panel from the Card's properties.-->
-
 		<div class="dropdown">
-		<button class="btn btn-block btn-secondary dropdown-toggle cardViewDropdown ld-over-inverse" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<div class="ld ld-ring ld-spin"></div>Click here to select and inspect a VCard
-		</button>
-		<div class="dropdown-menu" id="dropdownBtn">
+			<button class="btn btn-block btn-secondary dropdown-toggle cardViewDropdown ld-over-inverse" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<div class="ld ld-ring ld-spin"></div>Click here to select and inspect a VCard
+			</button>
+			<div class="dropdown-menu" id="dropdownBtn"></div>
 		</div>
-		</div>
-		<!-- TODO: add div that shows currently selected file -->
+		<!--shows currently selected file -->
+		<div id="cardViewFileName">Please upload and select a valid VCard file</div>
 		<div class="tableFixHead">
 			<table class="table table-striped text-center table-bordered">
 			<thead class="thead-dark">
@@ -144,7 +147,8 @@
 				<tbody id="cardViewPanelTableBody">
 					<tr>
 						<td class="hideCounter"></td>
-						<td>No files</td>
+						<td>No valid files</td>
+						<td></td>
 						<td></td>
 					</tr>
 				</tbody>
@@ -158,6 +162,7 @@
 			<a href="https://www.uoguelph.ca/">University of Guelph</a>
 		</div>
 	</footer>
+	</div>
 
 
 	<!-- Leave me at the bottom of body -->

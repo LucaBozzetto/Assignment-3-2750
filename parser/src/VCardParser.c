@@ -458,7 +458,6 @@ VCardErrorCode writeCard(const char* fileName, const Card* obj){
                 if(utc > 0)
                     strcat(tmpStr,"Z");
 
-                //FIXME: charswritten will always be > than 0 since ANNIVERSARY: is written!!
                 charsWritten = fprintf(filePtr,"ANNIVERSARY:%s\r\n", tmpStr);
                 free(tmpStr);
                 if(charsWritten < 0){
@@ -484,7 +483,6 @@ VCardErrorCode writeCard(const char* fileName, const Card* obj){
                     sprintf(tmpStr, "%s", birthday->date);
                 }
 
-                //FIXME: charswritten will always be > than 0 since BDAY: is written!!
                 charsWritten = fprintf(filePtr,"BDAY:%s\r\n", tmpStr);
                 free(tmpStr);
                 if(charsWritten < 0){
@@ -1318,7 +1316,7 @@ char* cardToJSON(Card *obj){
 
     if (obj == NULL || obj->fn == NULL || obj->optionalProperties == NULL){
         output = malloc(sizeof(char) * 1);
-        sprintf(output,"");
+        output[0] = '\0';
         return output;
     }
 
@@ -1390,7 +1388,7 @@ char* getSummaryFromFile(char *fileName){
     
     if(fileName == NULL){
         err = INV_FILE;
-        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 15));
+        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 20));
         sprintf(JSONResponse, "{\"status\":%d}", err);
         deleteCard(objCard);
         return JSONResponse;
@@ -1405,7 +1403,7 @@ char* getSummaryFromFile(char *fileName){
     free(filePath);
     
     if(err != OK){
-        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 15));
+        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 20));
         sprintf(JSONResponse, "{\"status\":%d}", err);
         deleteCard(objCard);
         return JSONResponse;
@@ -1413,7 +1411,7 @@ char* getSummaryFromFile(char *fileName){
 
     err = validateCard(objCard);
     if(err != OK){
-        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 15));
+        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 20));
         sprintf(JSONResponse, "{\"status\":%d}", err);
         deleteCard(objCard);
         return JSONResponse;
@@ -1452,7 +1450,7 @@ char* getCardDetails(char *fileName){
 
     if(fileName == NULL){
         err = INV_FILE;
-        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 15));
+        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 20));
         sprintf(JSONResponse, "{\"status\":%d}", err);
         deleteCard(objCard);
         return JSONResponse;
@@ -1467,7 +1465,7 @@ char* getCardDetails(char *fileName){
     free(filePath);
 
     if(err != OK){
-        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 15));
+        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 20));
         sprintf(JSONResponse, "{\"status\":%d}", err);
         deleteCard(objCard);
         return JSONResponse;
@@ -1475,7 +1473,7 @@ char* getCardDetails(char *fileName){
 
     err = validateCard(objCard);
     if(err != OK){
-        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 15));
+        JSONResponse = malloc(sizeof(char) * (numPlaces(err) + 20));
         sprintf(JSONResponse, "{\"status\":%d}", err);
         deleteCard(objCard);
         return JSONResponse;

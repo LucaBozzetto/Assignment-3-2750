@@ -299,7 +299,6 @@ bool parseParameter(char *s, int start, int end,Property *prop, bool *text){
     return true;
 }
 
-//TODO: may want to add a parameter to know if the value is date or text
 //parse a value from pos till length
 bool parseValue( char *s, int pos, int length, Property *prop, bool compound){
     char *sbstr;

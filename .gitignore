@@ -15,6 +15,7 @@ Thumbs.db
 !README
 README.md
 node_modules/
+npm_mod/
 *.dylib
 *.so
 main.dSYM/

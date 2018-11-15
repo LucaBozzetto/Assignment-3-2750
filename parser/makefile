@@ -7,10 +7,10 @@ REQUIRED_PARSER = src/VCardParser.c include/VCardParser.h include/HelperFunction
 all: linuxLib
 
 macLib: $(REQUIRED_PARSER)
-	$(CC) $(CFLAGS) -dynamiclib -undefined suppress -flat_namespace src/VCardParser.c src/helperFunctions.c src/LinkedListAPI.c -o ../VCardLib.dylib
+	$(CC) $(CFLAGS) -dynamiclib -undefined suppress -flat_namespace src/VCardParser.c src/HelperFunctions.c src/LinkedListAPI.c -o ../VCardLib.dylib
 
 linuxLib: $(REQUIRED_PARSER)
-	$(CC) $(CFLAGS) -shared -fpic src/VCardParser.c src/helperFunctions.c src/LinkedListAPI.c -o ../VCardLib.so
+	$(CC) $(CFLAGS) -shared -fpic src/VCardParser.c src/HelperFunctions.c src/LinkedListAPI.c -o ../VCardLib.so
 	
 
 # removes all library files

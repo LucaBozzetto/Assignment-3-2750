@@ -18,9 +18,12 @@ $(document).ready(function() {
     // clear all messages in status panel
     $("#clearBtn").click(function(e){
         e.preventDefault();
-        let $this = $(this);
 
-        $(".alert").alert('close');
+        let num = $("#messagesBadge").text();
+        num = parseInt(num);
+
+        if(num > 0)
+            $(".alert").alert('close');
     });
 
     // Upload the selected file to the server. I could have used a form and submitted it but this way
@@ -44,39 +47,36 @@ $(document).ready(function() {
         let form = new FormData();
 
         form.append('uploadFile',selectedFile, selectedFile.name);
-        // $("#formVCard").submit();
 
-        $(this).toggleClass("running");
-        $(this).toggleClass("noClick");
+        $('#container').toggleClass("running");
+        $('#container').toggleClass("noClick");
 
-        $.ajax({
-            type: 'post',            //Request type
-            data: form,
-            processData: false,
-            contentType: false,
-            dataType: 'json',       //Data type - we will use JSON for almost everything 
-            url: '/upload',   //The server endpoint we are connecting to
-            success: function (data) {
-                /*  Do something with returned object
-                    Note that what we get is an object, not a string, 
-                    so we do not need to parse it on the server.
-                    JavaScript really does handle JSONs seamlessly
-                */
-                // $('#blah').html("On page load, Received string '"+JSON.stringify(data)+"' from server");
-                //We write the object to the console to show that the request was successful
-                // console.log("success");
-                // window.location.replace("/"); 
-                $("#uploadVCard").toggleClass("running");
-                $("#uploadVCard").toggleClass("noClick");
 
+
+        uploadFile(form, selectedFile.name).then((resp) => {
+            $('#container').toggleClass("running");
+            $('#container').toggleClass("noClick");
+
+            console.log("success");
+            console.log(resp);
+
+            $(".alert").alert('close');
+            if(resp.fileAlreadyExists === false){
                 updateUI();
-
-            },
-            fail: function(error) {
-                $(this).toggleClass("running");
-                $(this).toggleClass("noClick");
-                // Non-200 return, do something with error
-                // console.log("Error"); 
+                createMessage(`<strong>Uploaded:</strong> ${selectedFile.name} was uploaded!`,"primary");
+            }
+        }).catch((e) => {
+            // console.log("error");
+            // console.log(e);
+            $("#container").toggleClass("running");
+            $("#container").toggleClass("noClick");
+            $(".alert").alert('close');
+            if(e.status === 409){
+                createMessage(`<strong>Error:</strong> ${selectedFile.name} was <strong>NOT</strong> uploaded, a file with the same name already exists!`,"primary");
+                updateUI();
+            }else{
+                failedRequest(e);
+                updateUI();
             }
         });
     });
@@ -84,6 +84,42 @@ $(document).ready(function() {
     /***
      * AJAX calls
      */
+
+    function uploadFile(form, name){
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'post',            //Request type
+                data: form,
+                global: true,
+                processData: false,
+                contentType: false,
+                dataType: 'json',       //Data type - we will use JSON for almost everything 
+                url: '/upload',   //The server endpoint we are connecting to
+                timeout: 5000,
+                success: resolve,
+                error: reject,
+            });
+        });
+    }
+
+    /* 
+    $('#container').toggleClass("running");
+    $('#container').toggleClass("noClick");
+
+    $(".alert").alert('close');
+
+    updateUI();
+    createMessage(`<strong>Uploaded:</strong> ${selectedFile.name} was uploaded!`,"primary")
+
+
+
+
+    console.log("error");
+        // $(this).toggleClass("running");
+        // $(this).toggleClass("noClick");
+        // createMessage(`<strong>Error:</strong> ${selectedFile.name} was <strong>NOT</strong> uploaded!`,"primary")
+    }
+    */
 
     function getFileNames(){
         return new Promise((resolve, reject) => {
@@ -124,40 +160,63 @@ $(document).ready(function() {
 
         getFileNames()
         .then((names) => {
+
+            let requestes = [];
+
             for (let i in names){
-                if(i == 0)
-                    $("#fileLogPanelTableBody").html("");
-                getSummaryFromFile(names[i])
-                .then((data) => {
-                    updateFileLog(data);
-                });
+                requestes[i] = getSummaryFromFile(names[i]);
             }
 
-            loadDropdown(names);
-            console.log(names[0]);
+            
+            // Wait for all summary to be received and the update the UI based on which files were valid
+            Promise.all(requestes).then((values) => {
+                let valids = [];
+                let j = 0;
 
-            getCardDetails(names[0])
-            .then((data) => {
-                updateCardView(data);
+                // console.log(values);
+
+                for (let i in values){
+                    // console.log(values[data]);
+                    if(i == 0 )
+                        $("#fileLogPanelTableBody").html("");
+
+                    if(updateFileLog(values[i]))
+                        valids[j++] = values[i].name;
+                }
+
+                loadDropdown(valids);
+
+                if(valids[0] !== undefined){
+                    getCardDetails(valids[0])
+                    .then((data) => {
+                        updateCardView(data);
+                    }).catch((e) => {
+                        failedRequest(e);
+                    });
+                }
+            }).catch((e) => {
+                failedRequest(e);
             });
-
+        }).catch((e) => {
+            failedRequest(e);
         });
-
     }
 
     updateUI();
 
+    function failedRequest(e){
+        console.log(e);
+        createMessage(`<strong>Something went wrong!</strong> A request generated an unexpected error(${e.status}). Please try again.`,"danger");
+    }
+
     function updateCardView(data){
-        //sostituisci contenuto
-        console.log(data);
+        // console.log(data);
 
         if(data.details.status != 0){
-            //TODO: add erro handling
-            //gestisci errore
-            handleErrorCode(data.details.status,data.name);
             return false;
         }
 
+        $("#cardViewFileName").text(data.name);
         let tableBody = $("#cardViewPanelTableBody");
 
         let cardObj = data.details.card;
@@ -245,16 +304,15 @@ $(document).ready(function() {
             tableBody.append(row);
         }
 
-        handleErrorCode(data.summary.status,data.name);
-
         return true;
     }    
 
     function loadDropdown(names){
         let dropdown = $("#dropdownBtn");
+        dropdown.html("");
 
         for(let i in names){
-            dropdown.append(`<a class="dropdown-item" href="#">${names[i]}</a>`);
+            dropdown.append(`<a class="dropdown-item cardViewListElement" href="#">${names[i]}</a>`);
             if(i == 0 )
                 dropdown.children(":first").addClass("active");
         }
@@ -264,12 +322,16 @@ $(document).ready(function() {
         // console.log(data);
 
         if(data.summary.status != 0){
-            //TODO: add erro handling
             // console.log("error:"+data.summary.status);
-            //gestisci errore
+
+            //NOTE: an invalid file should not be displayed on the fileLogPanel
+            // see TA post here https://moodle.socs.uoguelph.ca/mod/forum/discuss.php?d=1998
             handleErrorCode(data.summary.status,data.name);
             return false;
         }
+
+        if($("#fileLogPanelEmptyPlaceholder").length > 0)
+            $("#fileLogPanelTableBody").html("");
 
         let tableBody = $("#fileLogPanelTableBody");
         let row = `<tr>
@@ -287,20 +349,28 @@ $(document).ready(function() {
 
     function createMessage(msg, msgType){
         //increment the notification badge number
+        let hidden = "";
         let num = $("#messagesBadge").text();
         num = parseInt(num) + 1;
         $("#messagesBadge").text(num);
 
-        let alertDiv = `<div class="alert alert-${msgType} alert-dismissible fade show" role="alert">
+        if((msgType === "success" && !($("#successFilter").hasClass("active")))
+        || (msgType === "danger" && !($("#errorFilter").hasClass("active")))
+        || (msgType === "warning" && !($("#warningFilter").hasClass("active")))
+        || (msgType === "primary" && !($("#uploadFilter").hasClass("active")))){
+            hidden = "hidden";
+        }
+
+        let alertDiv = `<div class="alert alert-${msgType} alert-dismissible fade show ${hidden}" role="alert">
                             <div class="text-center">${msg}</div>
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>`;
         
-        if(num -1 == 0){
+        if(num -1 == 0)
             $("#errorBoard").html("");
-        }
+
         $("#errorBoard").append(alertDiv);
     }
 
@@ -324,10 +394,15 @@ $(document).ready(function() {
             createMessage(`<strong>Something went wrong!</strong> ${fileName} generated an unexpected error!`,"danger");
     }
 
-    $(document).on("click", ".dropdown-item", function (e){
+    $(document).on("click", ".cardViewListElement", function (e){
         e.preventDefault();
+        let prevElem = $(this).parent().children(".active");
+
         $(this).parent().children().removeClass("active");
         $(this).toggleClass("active");
+
+        if(prevElem.text() == $(this).text())
+            return;
 
         getCardDetails($(this).text())
         .then((data) => {
@@ -335,15 +410,41 @@ $(document).ready(function() {
         });
     });
 
+    $(document).on("click", ".filterListElement", function (e){
+        e.stopPropagation();
+        e.preventDefault();
+
+        $(this).toggleClass("active");
+        $(this).children(".far").toggleClass("hidden");
+
+        //hide or show
+        let id = $(this).attr('id');
+
+        if(id == "successFilter"){
+            $(".alert-success").toggleClass("hidden");
+        }
+        if(id == "errorFilter"){
+            $(".alert-danger").toggleClass("hidden");
+        }
+        if(id == "warningFilter"){
+            $(".alert-warning").toggleClass("hidden");
+        }
+        if(id == "uploadFilter"){
+            $(".alert-primary").toggleClass("hidden");
+        }
+    });
+
     $(document).on("close.bs.alert",".alert",function(e){
-        // console.log("closed");
+        if($("#emptyMessage").length > 0){
+            return;
+        }
         let num = $("#messagesBadge").text();
         num = parseInt(num) - 1;
         $("#messagesBadge").text(num);
 
         if(num == 0){
-            let alertDiv = `<div class="alert alert-secondary alert-dismissible fade show" role="alert">
-                                <div class="text-center"><strong>Such emptiness!</strong> your status messages will be shown here</div>
+            let alertDiv = `<div id="emptyMessage" class="alert alert-secondary alert-dismissible fade show" role="alert">
+                                <div class="text-center"><strong> Such emptiness!</strong> your status messages will be shown here</div>
                             </div>`;
 
             $("#errorBoard").append(alertDiv);
@@ -355,132 +456,3 @@ $(document).ready(function() {
 function isEmpty(obj){
     return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
-
-
-/***
- * Cimitero
- */
-
-// On page-load AJAX Example
-//  $.ajax({
-//      type: 'get',            //Request type
-//      dataType: 'json',       //Data type - we will use JSON for almost everything 
-//      url: '/someendpoint',   //The server endpoint we are connecting to
-//      success: function (data) {
-//          /*  Do something with returned object
-//              Note that what we get is an object, not a string, 
-//              so we do not need to parse it on the server.
-//              JavaScript really does handle JSONs seamlessly
-//          */
-//         $('#blah').html("On page load, Received string '"+JSON.stringify(data)+"' from server");
-//         //We write the object to the console to show that the request was successful
-//         // console.log(data); 
-
-//     },
-//     fail: function(error) {
-//         // Non-200 return, do something with error
-//         // console.log(error); 
-//     }
-// });
-
-// function viewCard(fileName){
-//     console.log(fileName);
-// }
-
-
-
-// loadDropDown();
-
-// // Load the dropdown list requesting all vcard file names in uploads/ folder
-// function loadDropDown(){
-
-//     let ajaxRes = [];
-
-//     $("#dropdownMenuButton").toggleClass("running");
-//     $("#dropdownMenuButton").toggleClass("noClick");
-
-//     let req = $.ajax({
-//         type: 'get',            //Request type
-//         dataType: 'json',       //Data type - we will use JSON for almost everything 
-//         url: '/upload',   //The server endpoint we are connecting to
-//         // success: myCallback,
-//         // fail: function(error) {
-//         //     // Non-200 return, do something with error
-//         //     console.log(error); 
-//         // }
-//     });
-
-//     let success = function(response){
-//         // console.log("response" + response);
-//         $("#dropdownMenuButton").toggleClass("running");
-//         $("#dropdownMenuButton").toggleClass("noClick");
-
-//         let dropdown = $("#dropdownBtn");
-
-//         // console.log("loaded "+response);
-
-//         for(let name in response){
-//             dropdown.append(`<a class="dropdown-item" href="#">${response[name]}</a>`);
-//             ajaxRes.push(response[name]);
-//         }
-
-//     };
-
-//     let err = function(response){
-//         console.log(response);
-//         $("#dropdownMenuButton").toggleClass("running");
-//         $("#dropdownMenuButton").toggleClass("noClick");
-//     };
-
-//     req.then(success, err);
-//     console.log(ajaxRes);
-
-// }
-
-// getFileNames()
-//     .then(getSummaryFromFile)
-//     .then((data) => {
-//         //data contains name and summary properties
-//         updateUI(data)
-//     });
-//     .catch(showError);
-//     TODO: add error handling
-
-// let success = function(response){
-
-//     let dropdown = $("#dropdownBtn");
-
-//     for(let name in response){
-//         dropdown.append(`<a class="dropdown-item" href="#">${response[name]}</a>`);
-//         $.ajax({
-//             type: 'get',
-//             dataType: 'json',       //Data type - we will use JSON for almost everything 
-//             url: '/summary/'+response[name],   //The server endpoint we are connecting to
-//             success: function (data) {
-//                 console.log(data); 
-
-//             },
-//             fail: function(error) {
-//                 // Non-200 return, do something with error
-//                 console.log(error); 
-//             }
-//         });
-//     }
-
-//     populateFileLogTable(response);
-
-// };
-
-// let err = function(response){
-//     console.log(response);
-// };
-
-// reqFileNames.then(success,err);
-
-// // Event listener form replacement example, building a Single-Page-App, no redirects if possible
-// $('#someform').submit(function(e){
-//     $('#blah').html("Callback from the form");
-//     e.preventDefault();
-//     //Pass data to the Ajax call, so it gets passed to the 
-//     $.ajax({});
-// });

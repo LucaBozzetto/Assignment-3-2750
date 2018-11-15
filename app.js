@@ -12,7 +12,7 @@ const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 
 // FIXME: change to VCardLib.so to run on linux
-let VCardLibrary = ffi.Library('./VCardLib.dylib', {
+let VCardLibrary = ffi.Library('./VCardLib.so', {
   'getSummaryFromFile': [ 'string', [ 'string' ] ],
   'getCardDetails': [ 'string', [ 'string' ] ]
 });
@@ -29,6 +29,11 @@ app.get('/',function(req,res){
   res.sendFile(path.join(__dirname+'/public/index.html'));
 });
 
+// send about page
+app.get('/about',function(req,res){
+	res.sendFile(path.join(__dirname+'/public/about.html'));
+});
+
 // Send Style, do not change
 app.get('/style.css',function(req,res){
   //Feel free to change the contents of style.css to prettify your Web app
@@ -40,37 +45,46 @@ app.get('/index.js',function(req,res){
   fs.readFile(path.join(__dirname+'/public/index.js'), 'utf8', function(err, contents) {
 	const minimizedContents = JavaScriptObfuscator.obfuscate(contents, {compact: true, controlFlowFlattening: true});
 	res.contentType('application/javascript');
-	//TODO: return obfuscated code
-	// res.send(minimizedContents._obfuscatedCode);
-	res.send(contents);
+	res.send(minimizedContents._obfuscatedCode);
+	// res.send(contents);
   });
 });
 
 //Respond to POST requests that upload files to uploads/ directory
 app.post('/upload', function(req, res) {
-  if(!req.files) {
-	return res.status(400).send('No files were uploaded.');
-  }
+
+	let alreadyExists = false;
+	
+  	if(!req.files) {
+		return res.status(400).send({fileAlreadyExists:false});
+  	}
  
-  let uploadFile = req.files.uploadFile;
+  	let uploadFile = req.files.uploadFile;
+
+  	fs.access('uploads/' + uploadFile.name, fs.constants.F_OK, (err) => {
+		if(!err)
+			alreadyExists = true;
+	});
  
   // Use the mv() method to place the file somewhere on your server
   uploadFile.mv('uploads/' + uploadFile.name, function(err) {
 	if(err) {
-	  return res.status(500).send(err);
+	  return res.status(500).send({fileAlreadyExists:alreadyExists});
 	}
 
+
 	// res.redirect('/');
-	res.send({
-	  foo: "bar"
-	});
+	if(!alreadyExists)
+		res.send({fileAlreadyExists: false});
+	else
+		res.status(409).send({fileAlreadyExists: true});
   });
 });
 
 //Respond to GET requests for files in the uploads/ directory
 app.get('/uploads/:name', function(req , res){
   fs.stat('uploads/' + req.params.name, function(err, stat) {
-	console.log(err);
+	// console.log(err);
 	if(err == null) {
 	  res.sendFile(path.join(__dirname+'/uploads/' + req.params.name));
 	} else {
@@ -118,7 +132,7 @@ app.get('/summary/:fileName',function(req,res){
 	
 	// console.log(result);
 	res.send(JSON.parse(result));
-	// console.log("crascho qui");
+	// console.log("summary");
 
 });
 
@@ -127,7 +141,7 @@ app.get('/details/:fileName',function(req,res){
 	
 	// console.log(result);
 	res.send(JSON.parse(result));
-	// console.log("crascho qui");
+	// console.log("details");
 
 });
 

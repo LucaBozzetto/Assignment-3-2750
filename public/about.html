@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>vCard Viewer</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Assignment 3 - CIS*2750 course @ University of Guelph.">
+	<meta name="keywords" content="Assignment,VCard,University of Guelph ">
+	<meta name="author" content="Luca Bozzetto">
+	<!-- Load jquery, bootstrap -->
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<!-- Custom CSS -->
+	<link rel="stylesheet" type="text/css" href="/style.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="/loading.css"/> 
+	<link rel="stylesheet" type="text/css" href="/loadingbutton.css"/>
+	<!-- Custom CSS End -->
+	<script>
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip()
+		})
+	</script>
+</head>
+<body>
+	
+	<!-- Menu -->
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#"><i class="fas fa-address-card align-top" id="menuIcon"></i>VCard Viewer</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+			<div class="navbar-nav">
+			<a class="nav-item nav-link" href="/">App</a>
+			<!-- <a class="nav-item nav-link" href="/assignment">Assignment</a> -->
+			<a class="nav-item nav-link active" href="#">About <span class="sr-only">(current)</span></a>
+			</div>
+		</div>
+	</nav>
+
+	<hr>
+
+	<h1 class="display-3">
+	VCard Viewer
+	</h1>
+	<h1><small class="text-muted">A WebApp to upload, parse and inspect vCards!</small></h1>
+
+	<p class="lead">
+	This website was developed as part of the <a href="#/" data-toggle="tooltip" data-placement="top" title="Software Development and Integration">CIS*2750</a> 
+	course @ University of Guelph.
+	The entire source code will be available once the course is completed on my <a href="https://github.com/lucabozzetto">Github page</a>.
+	</p>
+
+	<p class="lead">
+	The files parser is written in C and is located in the 'parser' directory. Please mind that the course assignments
+	simplified the parsing so at the moment not all valid vCards files will be successfully processed.
+	In the future I might add functionalities and fully implement a parser.
+	</p>
+
+	
+
+	<!-- Footer -->
+	<footer class="page-footer font-small pt-4">
+		<div class="footer-copyright text-center py-3">Luca Bozzetto - CIS*2750 @ 
+			<a href="https://www.uoguelph.ca/">University of Guelph</a>
+		</div>
+	</footer>
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+

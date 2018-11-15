@@ -52,7 +52,7 @@ input[type=submit], button {
 
 .tableFixHead {
   overflow-y: auto;
-  overflow-x: scroll;
+  overflow-x: auto;
   max-height: 200px;
 }
 
@@ -99,7 +99,7 @@ input[type=submit], button {
 }
 
 #errorBoard {
-  overflow-y: scroll; /*FIXME: hidden at first, change value via js */
+  overflow-y: auto;
   overflow-x: hidden;
   max-height: 200px;
 }
@@ -115,6 +115,7 @@ input[type=submit], button {
 
 .uploadDiv{
     margin-top: 1em;
+    display:  inline-block!important;
 }
 
 .dropdown-menu{
@@ -122,8 +123,61 @@ input[type=submit], button {
     overflow-y: auto;
 }
 
+#cardViewFileName{
+    width: 100%;
+    color: #fff;
+    text-align: center;
+    background-color: #212529;
+    /* border-color: #32383e; */
+}
+
+.filterBtn{
+    margin-bottom: 1%;
+    margin-left: 1%; 
+}
+
+.dropdown-item.active#successFilter{
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.dropdown-item.active#errorFilter{
+    color: #721c24;
+    background-color: #f8d7da;
+}
+
+.dropdown-item.active#warningFilter{
+    color: #856404;
+    background-color: #fff3cd;
+}
+
+.dropdown-item.active#uploadFilter{
+    color: #004085;
+    background-color: #cce5ff;
+}
+
+.hidden{
+    display: none!important;
+}
+
+.far{
+    margin-right: 3%;
+}
+
+#menuIcon{
+    font-size: xx-large;
+    margin-right: 3%;
+}
+
+.navbar-brand{
+    text-decoration: none !important;
+    pointer-events: none;
+}
+
 /* .dropdown-item.active{
     background-color: #212529;
     color: #fff;
 } */
+
+
 
