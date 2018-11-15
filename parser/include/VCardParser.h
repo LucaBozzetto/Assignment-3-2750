@@ -228,4 +228,10 @@ void addProperty(Card* card, const Property* toBeAdded);
 
 //additional
 char* getSummaryFromFile(char *fileName);
+
+char* cardToJSON(Card *obj);
+
+char* getSummaryFromFile(char *fileName);
+
+char* getCardDetails(char *fileName);
 #endif	

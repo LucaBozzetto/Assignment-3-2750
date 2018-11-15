@@ -102,25 +102,6 @@ $(document).ready(function() {
         });
     }
 
-    /* 
-    $('#container').toggleClass("running");
-    $('#container').toggleClass("noClick");
-
-    $(".alert").alert('close');
-
-    updateUI();
-    createMessage(`<strong>Uploaded:</strong> ${selectedFile.name} was uploaded!`,"primary")
-
-
-
-
-    console.log("error");
-        // $(this).toggleClass("running");
-        // $(this).toggleClass("noClick");
-        // createMessage(`<strong>Error:</strong> ${selectedFile.name} was <strong>NOT</strong> uploaded!`,"primary")
-    }
-    */
-
     function getFileNames(){
         return new Promise((resolve, reject) => {
             $.getJSON({

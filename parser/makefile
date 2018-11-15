@@ -15,8 +15,6 @@ ifeq ($(UNAME), Darwin)
 all: macLib
 endif
 
-all: linuxLib
-
 macLib: $(REQUIRED_PARSER)
 	$(CC) $(CFLAGS) -dynamiclib -undefined suppress -flat_namespace src/VCardParser.c src/HelperFunctions.c src/LinkedListAPI.c -o ../VCardLib.dylib
 
