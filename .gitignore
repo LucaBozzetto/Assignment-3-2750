@@ -12,10 +12,7 @@ ehthumbs.db
 Thumbs.db
 
 !makefile
-!README
-README.md
 node_modules/
-npm_mod/
 *.dylib
 *.so
 main.dSYM/
