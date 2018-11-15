@@ -22,4 +22,6 @@ main.dSYM/
 *.pdf
 *.vcf
 !uploads/testCardMin.vcf
-!uploads/examples/*
+!uploads/Examples/invCard/*.vcf
+!uploads/Examples/invProp/*.vcf
+!uploads/Examples/valid/*.vcf
