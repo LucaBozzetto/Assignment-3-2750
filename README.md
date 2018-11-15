@@ -9,9 +9,6 @@
 ```Bash
 # From /parser directory
 make
-
-# If you are using MacOS
-make macLib
 ```
 
 ### 2. Install

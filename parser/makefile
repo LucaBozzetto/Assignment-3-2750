@@ -4,6 +4,17 @@ INCLUDES = -Iinclude
 CFLAGS = -Wall $(INCLUDES)
 REQUIRED_PARSER = src/VCardParser.c include/VCardParser.h include/HelperFunctions.h src/HelperFunctions.c src/LinkedListAPI.c include/LinkedListAPI.h
 
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Linux)
+all: linuxLib
+# do something Linux-y
+endif
+ifeq ($(UNAME), Darwin)
+# do something Solaris-y
+all: macLib
+endif
+
 all: linuxLib
 
 macLib: $(REQUIRED_PARSER)
