@@ -14,7 +14,6 @@ The assignment's focus was to implement a standard and apply defensive programmi
 The C code was extensively tested for memory leaks using [Valgrind](http://valgrind.org/).  
 Moreover a test harness suite developed by UoG TAs was run in order to check the code for errors.  
 At the moment the project is meant to be used only on Linux or MacOS.  
-If you wish to check the assignment PDFs you can find them in the `/assignments` folder. 
 
 ## Installation and Running
 
