@@ -11,11 +11,22 @@ const fileUpload = require('express-fileupload');
 
 app.use(fileUpload());
 
-// FIXME: change to VCardLib.so to run on linux
-let VCardLibrary = ffi.Library('./VCardLib.so', {
-  'getSummaryFromFile': [ 'string', [ 'string' ] ],
-  'getCardDetails': [ 'string', [ 'string' ] ]
-});
+let isMacOs = process.platform === "darwin";
+
+let VCardLibrary = null;
+
+if (!isMacOs) {
+	VCardLibrary = ffi.Library('./VCardLib.so', {
+  	'getSummaryFromFile': [ 'string', [ 'string' ] ],
+  	'getCardDetails': [ 'string', [ 'string' ] ]
+	});	
+} else {
+	VCardLibrary = ffi.Library('./VCardLib.dylib', {
+  	'getSummaryFromFile': [ 'string', [ 'string' ] ],
+  	'getCardDetails': [ 'string', [ 'string' ] ]
+	});	
+}
+
 
 // Minimization
 const fs = require('fs');

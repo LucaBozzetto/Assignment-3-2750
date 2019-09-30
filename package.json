@@ -1,19 +1,25 @@
 {
-  "name": "a3",
+  "name": "vCardParser",
   "version": "1.0.0",
-  "description": "CIS2750 W18 - A3",
+  "description": "A vCard parser developed as part of Assignment 3 for the courser CIS2750 @ University of Guelph",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "v": "node -v"
   },
-  "author": "",
+  "author": "Luca Bozzetto",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
     "express-fileupload": "^0.4.0",
-    "ffi": "^2.2.0",
+    "ffi": "^2.3.0",
     "http": "0.0.0",
     "javascript-obfuscator": "^0.14.3",
+    "node": "8.9.4",
     "nodemon": "^1.15.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LucaBozzetto/VCard-Parser"
   }
 }
