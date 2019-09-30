@@ -1,6 +1,6 @@
 # VCard Parser - CIS*2750 Assignment 3
 
-![App screenshot](https://ibb.co/5F2KMKd)
+![App screenshot](https://user-images.githubusercontent.com/2963072/65902887-a6e62180-e3bb-11e9-9be7-d152f3cdccde.png)
 
 This is a partial implentation of a VCard Parser.  
 The parser is only working on a specific set of features (eg Geographical properties are not validated).  
