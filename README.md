@@ -1,4 +1,7 @@
 # VCard Parser - CIS*2750 Assignment 3
+
+![App screenshot](https://ibb.co/5F2KMKd)
+
 This is a partial implentation of a VCard Parser.  
 The parser is only working on a specific set of features (eg Geographical properties are not validated).  
 The vCard format specification can be found [here](https://tools.ietf.org/html/rfc6350).  
